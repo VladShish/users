@@ -854,9 +854,10 @@ class User extends UsersAppModel {
 		if (!empty($postData)) {
 			$this->set($postData);
 			if ($this->validates()) {
-				if (!empty($this->data[$this->alias]['password'])) {
+				if ($this->_isEncryptNeed($postData)) {
 					$this->data[$this->alias]['password'] = $this->hash($this->data[$this->alias]['password'], 'sha1', true);
 				}
+
 				$result = $this->save(null, false);
 				if ($result) {
 					$this->data = $result;
@@ -866,6 +867,19 @@ class User extends UsersAppModel {
 				return $postData;
 			}
 		}
+	}
+
+/**
+ * This method checks necessity password encryption
+ * 
+ * @param  array  $postData
+ * @return boolean
+ */
+	protected function _isEncryptNeed($postData) {
+		return (
+			!empty($postData[$this->alias]['password']) &&
+			!empty($this->data[$this->alias]['password'])
+		);
 	}
 
 /**
